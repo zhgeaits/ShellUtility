@@ -1,0 +1,37 @@
+#!/bin/bash
+#author zhangge
+#email zhgeaits@gmail.com
+#description:
+#	This is a shell to new a shell script file.
+
+HEAD="#!/bin/bash"
+AUTHOR="#author:zhangge"
+EMAIL="#email:zhgeaits@gmail.com"
+DESC="#description:愿我的家人和读者及读者的家人全体身体健康，一生平安！"
+
+if [ $# -lt 1 ]
+then
+	echo "Usage:newshell filename description"
+	exit
+fi
+
+filename=$1
+description=" "
+
+if [ "$2" != '' ];then
+    description=$2
+fi
+
+user=`whoami`
+touch $filename
+chmod 754 $filename
+chown $user $filename
+chgrp $user $filename
+
+echo $HEAD >> $filename
+echo $AUTHOR >> $filename
+echo $EMAIL >> $filename
+echo $DESC >> $filename
+echo -e "#  $description\n" >> $filename
+
+vim $filename

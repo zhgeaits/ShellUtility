@@ -1,0 +1,46 @@
+#!/bin/bash
+#author zhangge
+#email zhgeaits@gmail.com
+#description experiment 3 of unix
+
+filename=""
+
+clear
+while [ "$filename" == '' ];do
+	read -p  "请输入要检测状态的文件名：" filename
+done
+if [ ! -f $filename ];then
+	echo "文件$filename不存在"
+	exit
+fi
+echo "文件状态如下："
+ls -l $filename
+getfilesize="ls -l $filename | cut -d ' ' -f 5"
+lastfilesize=`eval $getfilesize`
+countchanged=0
+counttotal=0
+while [ 1 -eq 1 ];do
+	if [ $countchanged -eq 0 -a $counttotal -eq 10 ];then
+		echo "文件依然没有改变大小，程序将5秒后清屏退出...."
+		sleep 5
+		clear
+		exit
+	fi
+	if [ $countchanged -eq 2 ];then
+		echo "文件已经累计两次改变大小，程序将5秒后清屏退出...."
+		sleep 5
+		clear
+		exit
+	fi
+	filesize=`eval $getfilesize`
+	if [ $filesize -ne $lastfilesize ];then
+		echo "file[$filename] size changed"
+		lastfilesize=$filesize
+		countchanged=`expr $countchanged + 1`
+	fi
+	echo "5秒后继续检查文件大小....."
+	sleep 5
+	counttotal=`expr $counttotal + 1`
+	echo "文件已经改变$countchanged次"
+	echo "第$counttotal次检测文件大小"
+done

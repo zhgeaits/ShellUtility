@@ -1,0 +1,49 @@
+#!/bin/bash
+#author:jhat
+#email:cpf624@126.com
+#date:2012-01-07
+#describe:java
+
+JDK_FILE="jdk-6u34-linux-x64.bin"
+JDK_URL="ftp://uestcxhome.co.cc/Software/JDK/${JDK_FILE}"
+JDK_FOLDER="jdk1.6.0_34"
+#JDK_INSTALL="${HOME}/SoftWare"
+JDK_INSTALL="/usr/lib/jvm"
+JDK_PATH="${JDK_INSTALL}/${JDK_FOLDER}"
+JDK_HOME="${JDK_INSTALL}/java-6-sun"
+
+BASHRC="$HOME/.bashrc"
+
+type java > /dev/null 2>&1
+if [ $? != 0 ];then
+    if [ ! -f "$JDK_FILE" ];then
+        wget "$JDK_URL"
+    fi
+    chmod u+x $JDK_FILE
+    ./$JDK_FILE
+    mkdir -p "$JDK_INSTALL"
+    mv "$JDK_FOLDER" "$JDK_INSTALL"
+    ln -s "$JDK_PATH" "$JDK_HOME"
+	echo "export JAVA_HOME=${JDK_HOME}" >> "$BASHRC"
+    echo 'export CLASS_PATH=.:$JAVA_HOME/lib' >> "$BASHRC"
+    echo 'export PATH=$PATH:$JAVA_HOME/bin' >> "$BASHRC"
+fi
+
+#安装jdk
+#if [ "$(dpkg -l | grep sun-java6-jdk)" == '' ];then
+#	read -p "install sun-java6-jdk?[y/n]" input
+#	if [ $input == 'y' ] || [ $input == 'Y' ];then
+#		apt-get install sun-java6-jdk
+#		echo 'export JAVA_HOME=/usr/lib/jvm/java-6-sun' >> "$BASHRC"
+#		echo 'export CLASSPATH=.:$JAVA_HOME/lib' >> "$BASHRC"
+#		echo 'export PATH=$PATH:$JAVA_HOME/bin' >> "$BASHRC"
+#	fi
+#fi
+
+#安装jdk源码
+#if [ "$(dpkg -l | grep sun-java6-source)" == '' ];then
+#	read -p "install sun-java6-source?[y/n]" input
+#	if [ $input == 'y' ] || [ $input == 'Y' ];then
+#		apt-get install sun-java6-source
+#	fi
+#fi

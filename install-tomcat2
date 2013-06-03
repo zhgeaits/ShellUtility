@@ -1,0 +1,48 @@
+#!/bin/bash
+#author:jhat
+#email:cpf624@126.com
+#date:2012-01-08
+#describe:tomcat
+
+MYIDE=/usr/local/bin
+
+TOMCAT_VERSION=6.0.35
+TOMCAT_FOLDER=apache-tomcat-${TOMCAT_VERSION}
+TOMCAT_FILE=${TOMCAT_FOLDER}.tar.gz
+TOMCAT_URL=http://apache.dataguru.cn/tomcat/tomcat-${TOMCAT_VERSION/.*/}/v${TOMCAT_VERSION}/bin/${TOMCAT_FILE}
+TOMCAT_INSTALL=/var/lib
+TOMCAT_PATH=${TOMCAT_INSTALL}/tomcat
+TOMCAT_ETC=/etc/init.d/tomcat
+
+if [ ! -f "$TOMCAT_FILE" ];then
+    wget "$TOMCAT_URL"
+fi
+
+tar -xvzf "$TOMCAT_FILE"
+mv "$TOMCAT_FOLDER" "$TOMCAT_INSTALL"
+ln -s "${TOMCAT_INSTALL}/${TOMCAT_FOLDER}" "$TOMCAT_PATH"
+rm -rf "${TOMCAT_PATH}/webapps/docs"
+rm -rf "${TOMCAT_PATH}/webapps/examples"
+
+while [ "$admin" == '' ]
+do
+	read -p "admin:" admin
+done
+stty -echo
+while [ "$password" == '' ]
+do
+	read -p "password:" password
+done
+stty echo
+echo ''
+tuser="${TOMCAT_PATH}/conf/tomcat-users.xml"
+line=$(expr $(sed -n "/<\/tomcat-users>/=" "$tuser") - 1)
+sed -i "${line}a \	<user username=\""$admin"\" password=\""$password"\" roles=\"manager,admin\"/>" "$tuser"
+sed -i "${line}a \	<role rolename=\"manager\"/>" "$tuser"
+sed -i "${line}a \	<role rolename=\"admin\"/>" "$tuser"
+
+cp "$MYIDE/conf/tomcat" "$TOMCAT_ETC"
+sed -i "s/\$CATALINA_HOME_PATH/"${TOMCAT_PATH//\//\\/}"/g" "$TOMCAT_ETC"
+chmod ug+x "$TOMCAT_ETC"
+update-rc.d tomcat defaults
+service tomcat start
