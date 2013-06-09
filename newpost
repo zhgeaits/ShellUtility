@@ -1,0 +1,40 @@
+#!/bin/bash
+#author zhangge
+#email zhgeaits@gmail.com
+#description:
+#	这个shell用来生成blog的post
+
+DATE="date: `date '+%Y-%m-%d %T'`"
+HEAD="---"
+if [ $# -lt 3 ]
+then
+    echo "Usage: newpost title categories type [post]"
+    exit
+fi
+
+filename="`date '+%Y-%m-%d'`-$1.markdown"
+title="title: \"$1\""
+categories="categories: $2"
+types="type: $3"
+
+if [ $# == 4 ]
+then
+    layout="layout: $4"
+else
+    layout="layout: post"
+fi
+
+user=`whoami`
+touch $filename
+chown $user $filename
+chgrp $user $filename
+
+echo $HEAD >> $filename
+echo $layout >> $filename
+echo $title >> $filename
+echo $DATE >> $filename
+echo $categories >> $filename
+echo $types >> $filename
+echo $HEAD >> $filename
+
+vim $filename
